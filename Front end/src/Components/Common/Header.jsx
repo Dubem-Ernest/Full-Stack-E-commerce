@@ -1,10 +1,13 @@
 import React from 'react'
 import TopBar from '../Layout/TopBar'
+import Navbar from './Navbar'
+import SearchBar from './SearchBar'
 const Header = () => {
   return (
-    <div >
+    <header >
         <TopBar/>
-    </div>
+        <Navbar/>
+    </header>
   )
 }
 

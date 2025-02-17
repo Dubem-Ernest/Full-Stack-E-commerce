@@ -5,10 +5,15 @@ import { HiMagnifyingGlass, HiMiniXCircle } from "react-icons/hi2";
 
 const SearchBar = () => {
   const [searchTerm, setsearchTerm] = useState("");
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
 
   function handleSearchToggle() {
     setIsOpen(!isOpen);
+  }
+  function handleSearch(e){
+    e.preventDefault()
+    console.log(searchTerm)
+    setIsOpen(false);
   }
 
   return (
@@ -18,9 +23,10 @@ const SearchBar = () => {
       }`}
     >
       {isOpen ? (
-        <form className="relative flex items-center justify-center w-full">
+        <form onSubmit={handleSearch} className="relative flex items-center justify-center w-full">
           <div className="relative w-1/2">
             <input
+            onChange={(e)=>setsearchTerm(e.target.value) }
               type="text"
               placeholder="Search"
               value={searchTerm}
@@ -31,7 +37,7 @@ const SearchBar = () => {
               type="submit"
               className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-600 hover:text-gray-800"
             >
-              <HiMagnifyingGlass className="h-6 w-6 text-gray-700" />
+              <HiMagnifyingGlass className="h-6 w-6 text-gray-700 " />
             </button>
           </div>
 
@@ -41,12 +47,12 @@ const SearchBar = () => {
             className="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-600 hover:text-gray-800"
           >
             {" "}
-            <HiMiniXCircle className="h-6 w-6 text-gray-700" />
+            <HiMiniXCircle className="h-6 w-6 text-gray-700 cursor-pointer" />
           </button>
         </form>
       ) : (
         <button onClick={handleSearchToggle}>
-          <IoIosSearch className="h-6 w-6 text-gray-700" />{" "}
+          <IoIosSearch className="h-6 w-6 text-gray-700 cursor-pointer" />{" "}
         </button>
       )}
     </div>

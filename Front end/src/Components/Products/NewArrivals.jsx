@@ -7,6 +7,7 @@ const NewArrivals = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [startx, setStartx] = useState(0);
   const [scrollLeft, setscrollLeft] = useState(false);
+  const [canscrollLeft, setcanscrollLeft] = useState(false);
   const [canScrollRight, setcanScrollRight] = useState(true);
 
   const newArr = [
@@ -89,9 +90,43 @@ const NewArrivals = () => {
     },
   ];
 
+   function handleMouseDown(e) {
+     setIsDragging(true)
+     setStartx(e.pageX - scrollBar.current.offsetLeft)
+     setscrollLeft(scrollBar.current.scrollLeft);
+   }
+
+   function handleMouseMove(e) {
+    
+  }
+  
+
+  function handleMouseUpOrLeave(e) {
+  
+  }
+  
+
+  function handleMouseDown(e) {
+    setIsDragging(true)
+    setStartx(e.pageX - scrollRef.current.offsetLeft)
+  }
+  
+
+  function scroll(dir){
+    const scrollAmt = dir == 'left' ? -300 : 300
+    scrollBar.current.scrollBy({
+      left:scrollAmt, behaviour:'smooth'
+    })
+  }
+
   const updateScrollButton = () => {
     const container = scrollBar.current;
-
+        if(container){
+          const leftScroll = container.scrollLeft
+          const rightScrollable = container.scrollWidth > leftScroll + container.clientWidth 
+          setcanscrollLeft(leftScroll > 0)
+          setcanScrollRight(rightScrollable)
+        }
   
   };
 
@@ -119,11 +154,11 @@ const NewArrivals = () => {
         </p>
 
         <div className="absolute right-0 bottom-[-30px] flex space-x-2">
-          <button className="p-2 rounded border bg-white text-black">
+          <button disabled={!canscrollLeft} onClick={()=>scroll('left')} className={`p-2 rounded border  ${canscrollLeft ? ' bg-white text-black cursor-pointer': 'bg-gray-200 text-gray-400 cursor-not-allowed' }`}>
             <FiChevronLeft className="text-2xl" />
           </button>
 
-          <button className="p-2 rounded border bg-white text-black">
+          <button onClick={()=>scroll('right')} className={`p-2 rounded border  ${canScrollRight ? ' bg-white text-black cursor-pointer': 'bg-gray-200 text-gray-400 cursor-not-allowed' }`}>
             <FiChevronRight className="text-2xl" />
           </button>
         </div>
@@ -132,6 +167,10 @@ const NewArrivals = () => {
       <div
         ref={scrollBar}
         className="container mx-auto overflow-x-scroll flex space-x-6 relative "
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUpOrLeave}
+        onMouseLeave={handleMouseUpOrLeave}
       >
         {newArr.map((product, index) => {
           return (

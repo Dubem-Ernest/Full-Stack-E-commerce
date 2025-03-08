@@ -90,44 +90,49 @@ const NewArrivals = () => {
     },
   ];
 
-   function handleMouseDown(e) {
-     setIsDragging(true)
-     setStartx(e.pageX - scrollBar.current.offsetLeft)
-     setscrollLeft(scrollBar.current.scrollLeft);
-   }
-
-   function handleMouseMove(e) {
-    
+  function handleMouseDown(e) {
+    setIsDragging(true);
+    setStartx(e.pageX - scrollBar.current.offsetLeft);
+    setscrollLeft(scrollBar.current.scrollLeft);
   }
-  
 
-  function handleMouseUpOrLeave(e) {
-  
+ 
+
+  function handleMouseUpOrLeave() {
+    setIsDragging(false)
   }
-  
 
   function handleMouseDown(e) {
-    setIsDragging(true)
-    setStartx(e.pageX - scrollRef.current.offsetLeft)
+    setIsDragging(true);
+    setStartx(e.pageX - scrollBar.current.offsetLeft);
+    setscrollLeft(scrollBar.current.scrollLeft)
   }
-  
 
-  function scroll(dir){
-    const scrollAmt = dir == 'left' ? -300 : 300
+  function handleMouseMove(e) {
+    if (!isDragging) return;
+    const x = e.pageX - scrollBar.current.offsetLeft;
+    const walk = x - startx;
+    scrollBar.current.scrollLeft = scrollLeft - walk;
+  }
+
+
+  function scroll(dir) {
+    const scrollAmt = dir == "left" ? -300 : 300;
     scrollBar.current.scrollBy({
-      left:scrollAmt, behaviour:'smooth'
-    })
+      left: scrollAmt,
+      behaviour: "smooth",
+    });
   }
 
   const updateScrollButton = () => {
     const container = scrollBar.current;
-        if(container){
-          const leftScroll = container.scrollLeft
-          const rightScrollable = container.scrollWidth > leftScroll + container.clientWidth 
-          setcanscrollLeft(leftScroll > 0)
-          setcanScrollRight(rightScrollable)
-        }
-  
+    if (container) {
+      const leftScroll = container.scrollLeft;
+      const rightScrollable =
+        container.scrollWidth > leftScroll + container.clientWidth;
+      setcanscrollLeft(leftScroll > 0);
+      setcanScrollRight(rightScrollable);
+    }
   };
 
   useEffect(() => {
@@ -141,10 +146,10 @@ const NewArrivals = () => {
     // return () => {
     //   null;
     // };
-  },[]);
+  }, []);
 
   return (
-    <section>
+    <section className="py-16 px-4 lg:px-0">
       <div className="container mx-auto text-center mb-10 relative">
         <h2 className="text-3xl font-bold mb-4">Explore New Arrivals</h2>
         <p className="text-lg text-gray-600 mb-8">
@@ -154,11 +159,26 @@ const NewArrivals = () => {
         </p>
 
         <div className="absolute right-0 bottom-[-30px] flex space-x-2">
-          <button disabled={!canscrollLeft} onClick={()=>scroll('left')} className={`p-2 rounded border  ${canscrollLeft ? ' bg-white text-black cursor-pointer': 'bg-gray-200 text-gray-400 cursor-not-allowed' }`}>
+          <button
+            disabled={!canscrollLeft}
+            onClick={() => scroll("left")}
+            className={`p-2 rounded border  ${
+              canscrollLeft
+                ? " bg-white text-black cursor-pointer"
+                : "bg-gray-200 text-gray-400 cursor-not-allowed"
+            }`}
+          >
             <FiChevronLeft className="text-2xl" />
           </button>
 
-          <button onClick={()=>scroll('right')} className={`p-2 rounded border  ${canScrollRight ? ' bg-white text-black cursor-pointer': 'bg-gray-200 text-gray-400 cursor-not-allowed' }`}>
+          <button
+            onClick={() => scroll("right")}
+            className={`p-2 rounded border  ${
+              canScrollRight
+                ? " bg-white text-black cursor-pointer"
+                : "bg-gray-200 text-gray-400 cursor-not-allowed"
+            }`}
+          >
             <FiChevronRight className="text-2xl" />
           </button>
         </div>
@@ -166,7 +186,7 @@ const NewArrivals = () => {
 
       <div
         ref={scrollBar}
-        className="container mx-auto overflow-x-scroll flex space-x-6 relative "
+        className={`container mx-auto overflow-x-scroll flex space-x-6 relative ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
         onMouseDown={handleMouseDown}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUpOrLeave}
@@ -179,6 +199,7 @@ const NewArrivals = () => {
               className="min-w-[100%] sm:min-w-[50%] lg:min-w-[30%] relative"
             >
               <img
+                draggable="false"
                 src={product.images[0]?.url}
                 alt={product.images[0].altText || p.name}
                 className="w-full h-[500px] object-cover rounded-lg"

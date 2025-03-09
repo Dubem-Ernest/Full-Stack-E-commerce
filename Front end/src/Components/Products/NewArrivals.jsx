@@ -137,7 +137,6 @@ const NewArrivals = () => {
 
   useEffect(() => {
     const container = scrollBar.current;
-    console.dir(container);
     if (container) {
       container.addEventListener("scroll", updateScrollButton);
       updateScrollButton();

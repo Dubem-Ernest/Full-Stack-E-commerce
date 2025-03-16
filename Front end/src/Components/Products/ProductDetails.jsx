@@ -1,5 +1,7 @@
 import React from "react";
 import { useState, useEffect } from "react";
+import { toast } from "sonner";
+import ProductsGrid from "./ProductsGrid";
 
 const products = {
   name: "Classic Oxford Button-Down Shirt",
@@ -28,14 +30,42 @@ const products = {
   ],
 };
 
+const similarProducts = [
+  {
+    _id: 1,
+    name: "product 1",
+    price: 100,
+    images: [{ url: "https://picsum.photos/500/500?random=39" }],
+  },
+  {
+    _id: 2,
+    name: "product 2",
+    price: 100,
+    images: [{ url: "https://picsum.photos/500/500?random=49" }],
+  },
+  {
+    _id: 3,
+    name: "product 3",
+    price: 100,
+    images: [{ url: "https://picsum.photos/500/500?random=59" }],
+  },
+  {
+    _id: 4,
+    name: "product 4",
+    price: 100,
+    images: [{ url: "https://picsum.photos/500/500?random=69" }],
+  },
+];
+
 const ProductDetails = () => {
   const [productImg, setproductImg] = useState("");
   const [selectedColor, setselectedColor] = useState("");
   const [selectedSize, setselectedSize] = useState("");
-  const [quantity, setQuantity] = useState(1)
+  const [quantity, setQuantity] = useState(1);
+  const [buttonDisabled, setbuttonDisabled] = useState(false);
 
   useEffect(() => {
-    if (products.images) {
+    if (products.images.length > 1) {
       setproductImg(products.images[0].url);
       console.log(productImg);
     }
@@ -45,13 +75,28 @@ const ProductDetails = () => {
     // }
   }, [products.images]);
 
-  function handleQuantityChange(value){
-        if(value === 'inc'){
-          setQuantity((prev)=> prev + 1)
-        }
-        if(value == 'dec' & quantity!=0){
-          setQuantity((prev)=> prev - 1)
-        }
+  function handleQuantityChange(value) {
+    if (value === "inc") {
+      setQuantity((prev) => prev + 1);
+    }
+    if ((value == "dec") & (quantity != 0)) {
+      setQuantity((prev) => prev - 1);
+    }
+  }
+
+  function handleAddToCart() {
+    if (!selectedSize || !selectedColor) {
+      toast.error("Select a size and a prefered color");
+      return;
+    }
+    setbuttonDisabled(true);
+
+    setTimeout(() => {
+      toast.success("Item added to cart", {
+        duration: 1000,
+      });
+      setbuttonDisabled(false);
+    }, 500);
   }
 
   return (
@@ -134,7 +179,15 @@ const ProductDetails = () => {
               <p className="text-gray-700"> Size:</p>
               <div className="flex gap-2 mt-2">
                 {products.sizes.map((size) => (
-                  <button onClick={()=>setselectedSize(size)} key={size} className={`px-4 py-2 rounded border ${selectedSize ===size ? "border-4 border-black" : "border-gray-300"}`}>
+                  <button
+                    onClick={() => setselectedSize(size)}
+                    key={size}
+                    className={`px-4 py-2 rounded border ${
+                      selectedSize === size
+                        ? "border-4 border-black"
+                        : "border-gray-300"
+                    }`}
+                  >
                     {size}
                   </button>
                 ))}
@@ -143,17 +196,31 @@ const ProductDetails = () => {
             <div className="mb-6">
               <p className="text-gray-700">Quantity:</p>
               <div className="flex items-center space-x-4 mt-2">
-                <button onClick={()=>handleQuantityChange('inc')} className="px-2 py-1 bg-gray-200 rounded text-lg">
+                <button
+                  onClick={() => handleQuantityChange("inc")}
+                  className="px-2 py-1 bg-gray-200 rounded text-lg"
+                >
                   +
                 </button>
                 <span className="text-lg">{quantity}</span>
-                <button onClick={()=>handleQuantityChange('dec')} className="px-2 py-1 bg-gray-200 rounded text-lg">
+                <button
+                  onClick={() => handleQuantityChange("dec")}
+                  className="px-2 py-1 bg-gray-200 rounded text-lg"
+                >
                   -
                 </button>
               </div>
             </div>
-            <button className="bg-black text-white py-2 px-6 w-full mb-4">
-              ADD TO CART
+            <button
+              disabled={buttonDisabled}
+              onClick={handleAddToCart}
+              className={`text-white bg-black py-2 px-6 w-full mb-4 ${
+                buttonDisabled
+                  ? "cursor-not-allowed opacity-50"
+                  : " hover:bg-gray-900"
+              }`}
+            >
+              {buttonDisabled ? "Adding...." : "ADD TO CART"}
             </button>
 
             <div className="mt-10 text-gray-700">
@@ -168,6 +235,13 @@ const ProductDetails = () => {
               </table>
             </div>
           </div>
+        </div>
+        <div className="mt-10">
+          <h2 className="text-2xl text-center font-medium mb-4">
+            {" "}
+            You May Also Like
+          </h2>
+          <ProductsGrid products={similarProducts} />
         </div>
       </div>
     </div>
